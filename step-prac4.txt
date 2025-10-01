@@ -1,0 +1,98 @@
+Local disk C->Data1 folder->
+db folder
+config folder->file create->open notepad->save file as all type->mongo.cfg
+inside mongo.cfg
+dbpath=C:\data1\db\path
+logpath=C:\data1\log\mongod.log
+port=27020
+log folder
+Data2 folder->
+db folder
+config folder
+log folder
+copy cmongo.cfg and paste it in data2 config then open it with notepad and save it changes
+dbpath=C:\data2\db\path
+logpath=C:\data2\log\mongod.log
+port=27021
+
+Note if not download: go to browser ->MongoDB.com->tool->MongoDB Shell->version 2.5.8->package zip
+set the path C:\Program Files\MongoDB\Server\6.0\bin in environment variable path
+cmd->mongod
+cmd->mongosh for exit ctrl+c
+stop the MongoDB server services from services.msc file(Right click->stop)
+
+Open cmd in admin mode and set path as MongoDB bin folder and type the command:
+mongod --dbpath "C:\ProgramFiles\MongoDB\server\6.0\data" --logpath "C:\ProgramFiles\MongoDB\server\5.0\log\mongod.log" --port 27017 --storageEngine=wiredTiger --journal --replSet chanchal259743
+
+Open new cmd in admin mode and type the following command to connect with the primary server
+mongosh --port 27017
+
+Adding primary server to the replica set, type the following command
+> rsconf = { _id: "chanchal259743", members:[ { _id:0, host:"localhost:27017"} ]}
+
+Now initiate the replica set, type this command
+rs.initiate(rsconf)
+We will have replica set with other server to get our primary server with the replica set, press ENTER key once.
+
+To check whether the primary has all the database run
+show dbs command.
+
+Now we need to set the secondary servers. Open new cmd in admin mode and set the path as MongoDB bin folder and type following command:
+mongod --dbpath "C:\data1\db" --logpath "C:\data1\log\mongod.log" --port 27020 --storageEngine=wiredTiger --journal --replSet chanchal259743
+
+Repeat Step 11 for 2nd secondary server i.e. data2
+mongod --dbpath "C:\data2\db" --logpath "C:\data2\log\mongod.log" --port 27021 --storageEngine=wiredTiger --journal --replSet chanchal259743
+
+Adding secondary server in primary server. Go to cmd of PRIMARY server and type the command:
+chanchal259743:PRIMARY> rs.add("localhost:27020")
+
+To check the status type the command
+rs.status()
+
+Now add 2nd Secondary Server
+chanchal259743:PRIMARY> rs.add("localhost:27021")
+
+Open new cmd in admin mode and connect with the 1st secondary server
+mongosh --port 27020
+
+To get the databases of primary server, we need to run the following command in same cmd
+chanchal259743:SECONDARY> rs.secondaryOk()
+
+Open new cmd in admin mode and type the following command to connect with the 2nd secondary server
+mongosh --port 27021
+
+To get the database of primary server we need to run the following command in the same cmd
+chanchal259743:SECONDARY> rs.secondaryOk()
+
+Close all the cmd by pressing CTRL + C
+start the mongodb server services from services.msc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
